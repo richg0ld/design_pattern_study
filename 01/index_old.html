@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>71-1</title>
+</head>
+<body>
+<section id="data"></section>
+<script>
+//  프로그램은 변한다. 고로 격리 한다.
+//  격리 전략의 기본. 변화율에 따라 작성
+//  변화의 원인과 주기별로 정리 => 강한 응집성 & 약한 의존성
+//  Data Load, Rendering, Native Bind(네이티브 층 을 분리하려면, 현재 네이티브를 걷어내고 교체해도 돌아가나? 물어보면 됨)
+    const Table = (_=>{
+      const Private = Symbol(), render = Symbol();
+      return class{
+        constructor(parent){
+          if(typeof parent !== 'string' || !parent) throw "invalid param";
+          this[Private] = {parent};
+        }
+//        load(url){
+//          fetch(url).then(response=>{
+//            return response.json();
+//          }).then(json=>{
+//            this[render]();
+//          });
+//        }
+//        async 를 쓴 메소드는 내부에서 await 키워드를 쓸 수 있다
+//        then 대신 await를 쓸 수 있음. 할당,리턴시 대기 가능하다.
+        async load(url){
+          const response = await fetch(url);
+          if(!response.ok) throw "invalid response";
+          const json = await response.json();
+          const {title, header, items} = json;
+          if(!items.length) throw "no items";
+          Object.assign(this[Private], {title, header, items});
+          this[render]();
+        }
+        [render](){
+          const fields = this[Private];
+          const parent = document.querySelector(fields.parent);
+          if(!parent) throw "invaild parent";
+          if(!fields.items || !fields.items.length){
+            parent.innerHTML = "no data";
+            return;
+          }else parent.innerHTML = "";
+          const table = document.createElement("table");
+          const caption = document.createElement("caption");
+          caption.innerHTML = fields.title;
+          table.appendChild(caption);
+          table.appendChild(
+            fields.header.reduce((thead, data)=>{
+              const th = document.createElement("th");
+              th.innerHTML = data;
+              thead.appendChild(th);
+              return thead;
+            }, document.createElement("thead"))
+          );
+          parent.appendChild(
+            fields.items.reduce((table, row)=>{
+              table.appendChild(
+                row.reduce((tr, data)=>{
+                  const td = document.createElement("td");
+                  td.innerHTML = data;
+                  tr.appendChild(td);
+                  return tr;
+                }, document.createElement("tr"))
+              );
+              return table;
+            }, table)
+          );
+        }
+      };
+    })();
+    const table = new Table("#data");
+    table.load("71_1.json");
+</script>
+</body>
+</html>
