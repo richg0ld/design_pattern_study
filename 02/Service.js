@@ -9,7 +9,8 @@ const Service = class{
   }
   async getData(type){
     if(!this._checkers.has(type)) throw 'no checker';
-    const response = await fetch(this._baseUrl + '/' + type, {method:"GET", body:""}); const json = await response.json();
+    const response = await fetch(this._baseUrl + '/' + type, {method:"GET", body:""});
+    const json = await response.json();
     this._checkers.get(type).check(json);
   }
 };

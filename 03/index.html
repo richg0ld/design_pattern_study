@@ -6,7 +6,7 @@
 </head>
 <body>
 <section id="todo"></section>
-<script src="71_3.js"></script>
+<section id="dice"></section>
 <script>
     // 동일한 구조의 반복 : iteration -> iterator pattern
     // 알고리즘 전개에 따른 반복 : recursion -> composite, visitor pattern
@@ -195,6 +195,30 @@
 //    console.log(list.byTitle());
 
 </script>
+<script>
 
+ function throwDice(){
+   var cnt = 0, max = 15;
+   var randomDice = function (){
+     return Math.ceil(Math.random() * 6);
+   };
+   var interval = setInterval(function(){
+     document.querySelector("#dice").innerHTML = randomDice();
+     if(cnt++ >= max) clearInterval(interval);
+   }, 64);
+ }
+ function showPopup(index) {
+   alert(index);
+ }
+
+ function diceRender(){
+
+ }
+
+ // 현재 위치에서 이동할 위치까지 가는도중 90도 턴하는 구간이 있으면 그구간에서 멈췄다 이동
+ //
+
+ diceRender(3);
+</script>
 </body>
 </html>
